@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supy Savings Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      background-color: #ffffff;
+      color: #333;
+    }
+    h1 {
+      font-size: 36px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    input {
+      margin-bottom: 10px;
+      padding: 12px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      background-color: #fdfdfd;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    button, .discuss-button {
+      padding: 15px 25px;
+      border: none;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .calculate-button {
+      background-color: #6B3EF0;
+      color: #fff;
+      box-shadow: 0 0 12px #6B3EF0;
+    }
+    .refresh-button {
+      background-color: #dc3545;
+      color: #fff;
+      box-shadow: 0 0 12px #dc3545;
+    }
+    .discuss-button {
+      background-color: #28a745;
+      color: #fff;
+      box-shadow: 0 0 12px #28a745;
+      display: none;
+      text-decoration: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .result, .legend {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      border: 1px solid #eee;
+    }
+    .output-placeholder {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+    }
+    .discussion-text {
+      margin-top: 15px;
+      font-size: 20px;
+      text-align: center;
+      color: #333;
+    }
+    @media (max-width: 600px) {
+      .button-group {
+        flex-direction: column;
+      }
+      button, .discuss-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div style="text-align: center; margin-bottom: 20px;">
+    <span style="font-size: 48px; font-weight: bold; color: #6B3EF0;">Supy</span>
+  </div>
+
+  <h1>ROI Calculator</h1>
+
+  <label>Number of locations:</label>
+  <input type="number" id="locations" value="3">
+
+  <label>Hours per week on stock counting (per location):</label>
+  <input type="number" id="stockHours" value="2">
+
+  <label>Hours per week on ordering with suppliers (per location):</label>
+  <input type="number" id="procurementHours" value="3">
+
+  <label>Weekly procurement cost (per location):</label>
+  <input type="number" id="spend" value="12500">
+
+  <label>Average hourly wage ($AUD):</label>
+  <input type="number" id="wage" value="29">
+
+  <div class="button-group">
+    <button class="calculate-button" onclick="calculate()">Calculate</button>
+    <button class="refresh-button" onclick="refreshPage()">Reset</button>
+  </div>
+
+  <div class="output-placeholder" id="outputPlaceholder">Click Calculate to see how much you'll save with Supy — based on our customer results.</div>
+
+  <div class="result" id="output"></div>
+
+  <div style="text-align: center;">
+    <a id="discussButton" class="discuss-button" href="https://meetings.hubspot.com/isharni-jainasun/roi-calculator-chat" target="_blank">Book My ROI Session</a>
+  </div>
+
+  <div id="discussionText" class="discussion-text"></div>
+
+  <script>
+    function calculate() {
+      document.getElementById('outputPlaceholder').style.display = 'none';
+      const locations = +document.getElementById('locations').value;
+      const stockHours = +document.getElementById('stockHours').value;
+      const procurementHours = +document.getElementById('procurementHours').value;
+      const spend = +document.getElementById('spend').value;
+      const wage = +document.getElementById('wage').value;
+
+      const timeSavedRate = 0.5;
+      const spendSavedRate = 0.02;
+
+      const totalProfitMonthly = spend * locations * spendSavedRate;
+      const countHoursSaved = stockHours * locations * 4.33 * timeSavedRate;
+      const orderHoursSaved = procurementHours * locations * 4.33 * timeSavedRate;
+
+      const countValue = countHoursSaved * wage;
+      const orderValue = orderHoursSaved * wage;
+
+      document.getElementById('output').innerHTML = `
+        <div style="background-color: #e6ffed; padding: 20px; border: 2px solid #28a745; border-radius: 10px; text-align: center;">
+          <h3 style="font-size: 26px; color: #28a745;">🚀 Estimated Profit Boost</h3>
+          <div id="profitValue" style="font-size: 32px; font-weight: bold; color: #28a745;">$0.00</div>
+          <p style="font-weight: bold; color: #555;">Per Month</p>
+          <p style="font-size: 14px; color: #555; font-weight: bold;">📊 Based On Client Results</p>
+        </div>
+        <div style="margin-top: 20px; background-color: #f0f9ff; padding: 15px; border: 1px solid #bee3f8; border-radius: 10px; text-align: center;">
+          <h3 style="color: #1890ff; font-size: 20px; text-align: center;">🕒 Time Saved – Operations</h3>
+          <p id="countingResult" style="font-size: 22px; font-weight: bold;"></p>
+          <p id="orderingResult" style="font-size: 22px; font-weight: bold;"></p>
+          <p style="font-size: 18px; font-weight: bold; color: #444;">*Worth of labour costs that can be optimised with Supy</p>
+        </div>
+      `;
+
+      function animateValue(start, end, duration, callback) {
+        let startTime = null;
+        function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const progress = timestamp - startTime;
+          const percent = Math.min(progress / duration, 1);
+          const value = start + (end - start) * percent;
+          callback(value);
+          if (percent < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      animateValue(0, totalProfitMonthly, 1000, value => {
+        document.getElementById('profitValue').innerHTML = `<span style="color: #28a745;">$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
+      });
+
+      animateValue(0, countValue, 1000, value => {
+        document.getElementById('countingResult').innerHTML = `🔢 Counting: ${countHoursSaved.toFixed(2)} hrs/month = <span style='color: #1890ff; font-weight: bold;'>$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}*</span>`;
+      });
+
+      animateValue(0, orderValue, 1000, value => {
+        document.getElementById('orderingResult').innerHTML = `📦 Ordering: ${orderHoursSaved.toFixed(2)} hrs/month = <span style='color: #1890ff; font-weight: bold;'>$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}*</span>`;
+      });
+
+      document.getElementById('discussButton').style.display = 'inline-block';
+      document.getElementById('discussionText').innerHTML = `
+        <ul style="list-style: none; padding: 0; text-align: center; font-size: 16px; margin-top: 12px;">
+          <li>⏱️ 15 minute ROI pricing chat</li>
+          <li>📈 Real life examples & results</li>
+          <li>✅ Obligation Free</li>
+          <li style="font-size: 20px; font-weight: bold; margin-top: 16px;">🏅 Trusted by 250+ Aussie Venues</li>
+        </ul>
+      `;
+    }
+
+    function refreshPage() {
+      document.getElementById('locations').value = "";
+      document.getElementById('stockHours').value = "";
+      document.getElementById('procurementHours').value = "";
+      document.getElementById('spend').value = "";
+      document.getElementById('wage').value = "";
+      document.getElementById('output').innerHTML = "";
+      document.getElementById('outputPlaceholder').style.display = 'block';
+      document.getElementById('discussButton').style.display = 'none';
+      document.getElementById('discussionText').innerHTML = "";
+    }
+  </script>
+</body>
+</html>
